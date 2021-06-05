@@ -10,7 +10,8 @@ body {
 	background-size: cover;
 }
 #demo{
-	color:red;
+	color:green;
+	font-size: 20px;
 }
 #line {  
 	white-space: nowrap; 
@@ -18,7 +19,7 @@ body {
 #pagina{
 	font-size: 30px;
 	font-family: 'typeWriter', 'monospace';
-	line-height: 0.85;
+	line-height: 1.1;
 	margin-right: 10%;
 	box-shadow: 11px 11px 3px;
 	
@@ -90,10 +91,10 @@ var charMap = [
 [" ", 0.380, 0.912],
 [" ", 0.671, 0.908],
 [" ", 0.565, 0.901]
-]
+];
 const LETTER_DETEC_THRESHOLD = 0.00085;
 const BELL_RING_WARNING = 0.75;
-const LEFT_MARGIN = "&nbsp&nbsp"
+const LEFT_MARGIN = "&nbsp&nbsp";
 
 var img;
 var pagina;
@@ -103,7 +104,39 @@ var line = "";
 
 var playedBell = false;
 
-function addLetterToWord(event) {
+function addLetterToLine(letter) {
+		var linePos = document.getElementById("line").offsetWidth / pagina.offsetWidth;
+
+		//<br> is used for line break
+		if (letter == "<br>"){
+			pastLines.push(LEFT_MARGIN + line);
+			line = "";
+			linePos = 0;
+			playedBell = false;
+
+			var audio = new Audio("resources/car_back.wav");
+			audio.play();	
+		}
+		else if(linePos + 30/pagina.offsetWidth <= 1){
+			line += letter;
+			var audio = new Audio("resources/audio1_2.wav");
+			audio.play();	
+		}
+
+		pagina.innerHTML = "Texto: " + "<br>";
+		pastLines.forEach(function (pasLine, index) {
+			pagina.innerHTML += pasLine + "<br>";
+		});
+		pagina.innerHTML += "<span id='line'>" + LEFT_MARGIN  +  line + "</span>";
+
+		if((linePos > BELL_RING_WARNING) && (playedBell == false)){
+			var audio = new Audio("resources/bell2.mp3");
+			audio.play();
+			playedBell = true;
+		}
+}
+
+function checkIfClickIsOnLetter(event) {
 	var relX = (event.clientX - img.offsetLeft)/ img.width;
 	var relY = (event.clientY - img.offsetTop) / img.height;
 
@@ -121,37 +154,7 @@ function addLetterToWord(event) {
 		}
 	});
 	if(foundLetter != null){
-		var linePos = document.getElementById("line").offsetWidth / pagina.offsetWidth;
-
-		//<br> is used for line break
-		if (foundLetter == "<br>"){
-			pastLines.push(LEFT_MARGIN + line);
-			line = "";
-			linePos = 0;
-			playedBell = false;
-
-			var audio = new Audio("resources/car_back.wav");
-			audio.play();	
-		}
-		else if(linePos + 30/pagina.offsetWidth <= 1){
-			line += foundLetter;
-			var audio = new Audio("resources/audio1_2.wav");
-			audio.play();	
-		}
-
-		pagina.innerHTML = "Texto: " + "<br>";
-		pastLines.forEach(function (pasLine, index) {
-			pagina.innerHTML += pasLine + "<br>";
-		});
-		pagina.innerHTML += "<span id='line'>" + LEFT_MARGIN  +  line + "</span>";
-
-		if((linePos > BELL_RING_WARNING) && (playedBell == false)){
-			var audio = new Audio("resources/bell2.mp3");
-			audio.play();
-			playedBell = true;
-		}
-
-
+		addLetterToLine(foundLetter);
 	}
 }
 
@@ -180,7 +183,7 @@ function changeMouseToPointerOnLetter(event){
 window.onload = function(){
 	img = document.getElementById("myimg");
 	pagina = document.getElementById("pagina");
-	img.addEventListener("click", addLetterToWord);
+	img.addEventListener("click", checkIfClickIsOnLetter);
 	document.onmousemove = changeMouseToPointerOnLetter;
 };
 </script>
