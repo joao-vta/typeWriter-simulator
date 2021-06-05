@@ -1,7 +1,10 @@
 <html>
 <head>
 <style>
-@font-face { font-family: typeWriter; src: url('resources/atwriter_2.ttf'); } 
+@font-face { 
+	font-family: typeWriter; 
+	src: url('resources/atwriter_2.ttf'); 
+	} 
 body {
 	background-image: url('resources/test_2.jpg');
 	background-size: cover;
@@ -9,109 +12,168 @@ body {
 #demo{
 	color:red;
 }
+#line {  
+	white-space: nowrap; 
+}
 #pagina{
-	font-size: 26px;
+	font-size: 30px;
 	font-family: 'typeWriter', 'monospace';
+	line-height: 0.85;
 	margin-right: 10%;
 	box-shadow: 11px 11px 3px;
-}
-div {
+	
 	height: 80%;
 	width: 30%;
 	background-color: white;
 	float: right;
 }
+div {
+
+}
 #myimg{
-	width:45%;
+	width:43%;
 	float: left;
 }
 </style>
- <script>
- 	var charMap = [
-	["a", 0.333, 0.771],
-	["b", 0.571, 0.829],
-	["c", 0.464, 0.832],
-	["d", 0.442, 0.771],
-	["e", 0.422, 0.708],
-	["f", 0.489, 0.771],
-	["g", 0.541, 0.769],
-	["h", 0.596, 0.771],
-	["i", 0.682, 0.705],
-	["j", 0.645, 0.771],
-	["k", 0.695, 0.771],
-	["l", 0.752, 0.777],
-	["m", 0.675, 0.829],
-	["n", 0.620, 0.832],
-	["o", 0.739, 0.705],
-	["p", 0.784, 0.711],
-	["q", 0.325, 0.711],
-	["r", 0.476, 0.708],
-	["s", 0.387, 0.777],
-	["t", 0.531, 0.705],
-	["u", 0.633, 0.700],
-	["v", 0.516, 0.835],
-	["w", 0.372, 0.711],
-	["x", 0.414, 0.835],
-	["y", 0.578, 0.705],
-	["z", 0.360, 0.835]
-	]
-	const LETTER_DETEC_THRESHOLD = 0.00085;
-	var img;
-	var pagina;
-	var audio = new Audio("resources/audio1_2.wav");
 
-	var palavra = "";
-	function addLetterToWord(event) {
-		var x = (event.clientX - img.offsetLeft)/ img.width;
-		var y = (event.clientY - img.offsetTop) / img.height;
+<script>
+var charMap = [
+["a", 0.333, 0.771],
+["b", 0.571, 0.829],
+["c", 0.464, 0.832],
+["d", 0.442, 0.771],
+["e", 0.422, 0.708],
+["f", 0.489, 0.771],
+["g", 0.541, 0.769],
+["h", 0.596, 0.771],
+["i", 0.682, 0.705],
+["j", 0.645, 0.771],
+["k", 0.695, 0.771],
+["l", 0.752, 0.777],
+["m", 0.675, 0.829],
+["n", 0.620, 0.832],
+["o", 0.739, 0.705],
+["p", 0.784, 0.711],
+["q", 0.325, 0.711],
+["r", 0.476, 0.708],
+["s", 0.387, 0.777],
+["t", 0.531, 0.705],
+["u", 0.633, 0.700],
+["v", 0.516, 0.835],
+["w", 0.372, 0.711],
+["x", 0.414, 0.835],
+["y", 0.578, 0.705],
+["z", 0.360, 0.835],
+["<br>", 0.053, 0.312],
+["<br>", 0.038, 0.282],
+["<br>", 0.079, 0.269],
+["&nbsp", 0.906, 0.776],
+[" ", 0.392, 0.909],
+[" ", 0.444, 0.909],
+[" ", 0.491, 0.912],
+[" ", 0.535, 0.912],
+[" ", 0.594, 0.909],
+[" ", 0.640, 0.906],
+[" ", 0.705, 0.912],
+[" ", 0.746, 0.919],
+[" ", 0.801, 0.912],
+[" ", 0.851, 0.916],
+[" ", 0.380, 0.912],
+[" ", 0.671, 0.908],
+[" ", 0.565, 0.901]
+]
+const LETTER_DETEC_THRESHOLD = 0.00085;
+const BELL_RING_WARNING = 0.75;
+const LEFT_MARGIN = "&nbsp&nbsp"
 
-		document.getElementById("demo").innerHTML = "Clique em uma letra | " 
-		+ x.toFixed(3) + ", " + y.toFixed(3);
-		
-		// Checks every letter for proximity to click
-		var foundLetter = false;
-		charMap.forEach(function (item, index) {
-			if (((Math.pow(x - item[1], 2) + Math.pow(y - item[2], 2)) < LETTER_DETEC_THRESHOLD)
-			 && (!foundLetter)){
-				console.log(item[0]);
+var img;
+var pagina;
 
-				palavra = palavra + item[0];
+var pastLines = [];
+var line = "";
 
-				foundLetter = true;
-			}
+var playedBell = false;
+
+function addLetterToWord(event) {
+	var relX = (event.clientX - img.offsetLeft)/ img.width;
+	var relY = (event.clientY - img.offsetTop) / img.height;
+
+	document.getElementById("demo").innerHTML = "Clique em uma letra | " 
+	+ relX.toFixed(3) + ", " + relY.toFixed(3);
+	
+	// Checks every letter for proximity to click
+	//if close, add letter to line
+	var foundLetter = null;
+	charMap.forEach(function (letter, index) {
+		if (((Math.pow(relX - letter[1], 2) + Math.pow(relY - letter[2], 2)) < LETTER_DETEC_THRESHOLD)
+			&& (!foundLetter)){
+			console.log("click on letter " + letter[0]);
+			foundLetter = letter[0];
+		}
+	});
+	if(foundLetter != null){
+		var linePos = document.getElementById("line").offsetWidth / pagina.offsetWidth;
+
+		//<br> is used for line break
+		if (foundLetter == "<br>"){
+			pastLines.push(LEFT_MARGIN + line);
+			line = "";
+			linePos = 0;
+			playedBell = false;
+
+			var audio = new Audio("resources/car_back.wav");
+			audio.play();	
+		}
+		else if(linePos + 30/pagina.offsetWidth <= 1){
+			line += foundLetter;
+			var audio = new Audio("resources/audio1_2.wav");
+			audio.play();	
+		}
+
+		pagina.innerHTML = "Texto: " + "<br>";
+		pastLines.forEach(function (pasLine, index) {
+			pagina.innerHTML += pasLine + "<br>";
 		});
-		if(foundLetter){
+		pagina.innerHTML += "<span id='line'>" + LEFT_MARGIN  +  line + "</span>";
+
+		if((linePos > BELL_RING_WARNING) && (playedBell == false)){
+			var audio = new Audio("resources/bell2.mp3");
 			audio.play();
-			pagina.innerHTML = "Texto: " + "<br>" + palavra;
+			playedBell = true;
 		}
+
+
 	}
+}
 
-	function changePointerOnLetter(event){
-		var x = (event.clientX - img.offsetLeft)/ img.width;
-		var y = (event.clientY - img.offsetTop) / img.height;
+// Every time mouse moves, check if close to letter
+//if close to letter, change mouse to pointer
+function changeMouseToPointerOnLetter(event){
+	var relX = (event.clientX - img.offsetLeft)/ img.width;
+	var relY = (event.clientY - img.offsetTop) / img.height;
 
-		var foundLetter = false;
-		charMap.forEach(function (item, index) {
-			if (((Math.pow(x - item[1], 2) + Math.pow(y - item[2], 2)) < LETTER_DETEC_THRESHOLD)
-			 && (!foundLetter)){
-				foundLetter = true;
-			}
-		});
-
-		if(foundLetter){
-			img.style.cursor='pointer';
+	var foundLetter = false;
+	charMap.forEach(function (letter, index) {
+		if (((Math.pow(relX - letter[1], 2) + Math.pow(relY - letter[2], 2)) < LETTER_DETEC_THRESHOLD)
+			&& (!foundLetter)){
+			foundLetter = true;
 		}
-		else{
-			img.style.cursor='auto';
-		}
+	});
+
+	if(foundLetter){
+		img.style.cursor='pointer';
 	}
+	else{
+		img.style.cursor='auto';
+	}
+}
 
-	window.onload = function(){
-		img = document.getElementById("myimg");
-		pagina = document.getElementById("pagina");
-		img.addEventListener("click", addLetterToWord);
-		document.onmousemove = changePointerOnLetter;
-	};
+window.onload = function(){
+	img = document.getElementById("myimg");
+	pagina = document.getElementById("pagina");
+	img.addEventListener("click", addLetterToWord);
+	document.onmousemove = changeMouseToPointerOnLetter;
+};
 </script>
 </head>
 
@@ -122,38 +184,27 @@ div {
 	 >
 
 	 <div id = "pagina">
-	 Texto:<br>
+	 Texto:<span id='line'></span><br>
 	 </div>
 </body>
 
  <!--<script>
  	var charMap = [
-	['a'],
-	['b'],
-	['c'],
-	['d'],
-	['e'],
-	['f'],
-	['g'],
-	['h'],
-	['i'],
-	['j'],
-	['k'],
-	['l'],
-	['m'],
-	['n'],
-	['o'],
-	['p'],
-	['q'],
-	['r'],
-	['s'],
-	['t'],
-	['u'],
-	['v'],
-	['w'],
-	['x'],
-	['y'],
-	['z'],
+	['\n'],
+	['\n'],
+	['\n'],
+	['\t'],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' '],
+	[' ']
 	];
 
 	var counter = 0;
@@ -170,9 +221,9 @@ div {
 		
 		counter = counter + 1;
 		
-		if(counter == 25){
+		if(counter == charMap.length){
 			charMap.forEach(function (item, index) {
-				if(index < 25){
+				if(index < charMap.length){
 					palavra += "[";
 					palavra += item[0];
 					palavra += ",";
@@ -190,5 +241,4 @@ div {
 		document.getElementById("myimg").addEventListener("click", myFunction);  
 	};
 </script>
-</head>
--->
+</head>-->
