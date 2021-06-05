@@ -10,8 +10,8 @@ body {
 	background-size: cover;
 }
 #demo{
-	color:green;
-	font-size: 20px;
+	color:yellow;
+	font-size: 30px;
 }
 #line {  
 	white-space: nowrap; 
@@ -185,12 +185,13 @@ window.onload = function(){
 	pagina = document.getElementById("pagina");
 	img.addEventListener("click", checkIfClickIsOnLetter);
 	document.onmousemove = changeMouseToPointerOnLetter;
+	document.getElementById("demo").innerHTML = "Clique em uma letra";
 };
 </script>
 </head>
 
 <body>
-	<p id="demo">Clique em uma letra</p>
+	<p id="demo">Aguarde carregar</p>
 	<img id="myimg" src="resources/44_4.png"
 	 alt="Italian Trulli"
 	 >
