@@ -113,7 +113,6 @@ function addLetterToLine(letter) {
 			line = "";
 			linePos = 0;
 			playedBell = false;
-
 			var audio = new Audio("resources/car_back.wav");
 			audio.play();	
 		}
@@ -124,10 +123,10 @@ function addLetterToLine(letter) {
 		}
 
 		pagina.innerHTML = "Texto: " + "<br>";
-		pastLines.forEach(function (pasLine, index) {
-			pagina.innerHTML += pasLine + "<br>";
+		pastLines.forEach(function (pastLine, index) {
+			pagina.innerHTML += pastLine + "<br>";
 		});
-		pagina.innerHTML += "<span id='line'>" + LEFT_MARGIN  +  line + "</span>";
+		pagina.innerHTML += "<span id='line'>" + LEFT_MARGIN  + line + "</span>";
 
 		if((linePos > BELL_RING_WARNING) && (playedBell == false)){
 			var audio = new Audio("resources/bell2.mp3");
@@ -164,15 +163,15 @@ function changeMouseToPointerOnLetter(event){
 	var relX = (event.clientX - img.offsetLeft)/ img.width;
 	var relY = (event.clientY - img.offsetTop) / img.height;
 
-	var foundLetter = false;
+	var foundLetter = null;
 	charMap.forEach(function (letter, index) {
 		if (((Math.pow(relX - letter[1], 2) + Math.pow(relY - letter[2], 2)) < LETTER_DETEC_THRESHOLD)
 			&& (!foundLetter)){
-			foundLetter = true;
+			foundLetter = letter[0];
 		}
 	});
 
-	if(foundLetter){
+	if(foundLetter != null){
 		img.style.cursor='pointer';
 	}
 	else{
@@ -180,11 +179,31 @@ function changeMouseToPointerOnLetter(event){
 	}
 }
 
+function checkIfKeyIsValid(event){
+	var foundLetter = null;
+	charMap.forEach(function (letter, index) {
+		if(event.key == letter[0]){
+			foundLetter = letter[0];
+		}
+		else if(event.key == "Enter"){
+			foundLetter = '<br>';
+		}
+	});
+	if(foundLetter != null){
+		addLetterToLine(foundLetter);
+	}
+	else{
+		console.log(event.key);
+	}
+}
+
 window.onload = function(){
 	img = document.getElementById("myimg");
 	pagina = document.getElementById("pagina");
+
 	img.addEventListener("click", checkIfClickIsOnLetter);
-	document.onmousemove = changeMouseToPointerOnLetter;
+	document.addEventListener('keydown', checkIfKeyIsValid);
+	img.onmousemove = changeMouseToPointerOnLetter;
 	document.getElementById("demo").innerHTML = "Clique em uma letra";
 };
 </script>
