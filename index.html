@@ -1,6 +1,17 @@
 <html>
 <head>
 <style>
+#limpador{
+	position: relative;
+	float: right;
+	margin-right: 10%;
+	margin-top: 2%;
+	height: 30px;
+	width: 30%;
+	color: white;
+	background-color: cadetblue;
+	box-shadow: 5px 5px 3px black;
+}
 @font-face { 
 	font-family: typeWriter; 
 	src: url('resources/atwriter_2.ttf'); 
@@ -10,7 +21,7 @@ body {
 	background-size: cover;
 }
 #demo{
-	color:yellow;
+	color:black;
 	font-size: 30px;
 }
 #line {  
@@ -98,7 +109,10 @@ var charMap = [
 [".", 0.776, 0.830],
 ["/", 0.826, 0.830],
 ["-", 0.812, 0.635],
-["=", 0.866, 0.635]
+["=", 0.866, 0.635],
+["ShiftLock", 0.286, 0.750],
+["ShiftKey", 0.296, 0.832],
+["ShiftKey", 0.893, 0.832]
 ];
 
 var charMapShift = [
@@ -161,7 +175,10 @@ var charMapShift = [
 [".", 0.776, 0.828],
 ["?", 0.826, 0.830],
 ["*", 0.812, 0.635],
-["+", 0.866, 0.635]
+["+", 0.866, 0.635],
+["ShiftLock", 0.286, 0.750],
+["ShiftKey", 0.296, 0.832],
+["ShiftKey", 0.893, 0.832]
 ];
 
 const LETTER_DETEC_THRESHOLD = 0.00085;
@@ -175,6 +192,9 @@ var pastLines = [];
 var line = "";
 
 var playedBell = false;
+
+var isShift = false;
+var isShiftLock = false;
 
 function addLetterToLine(letter) {
 		var linePos = document.getElementById("line").offsetWidth / pagina.offsetWidth;
@@ -217,15 +237,29 @@ function checkIfClickIsOnLetter(event) {
 	// Checks every letter for proximity to click
 	//if close, add letter to line
 	var foundLetter = null;
-	charMap.forEach(function (letter, index) {
+	var charMapToUse = charMap;
+	if(isShiftLock || isShift) charMapToUse = charMapShift;
+
+	charMapToUse.forEach(function (letter, index) {
 		if (((Math.pow(relX - letter[1], 2) + Math.pow(relY - letter[2], 2)) < LETTER_DETEC_THRESHOLD)
 			&& (!foundLetter)){
 			console.log("click on letter " + letter[0]);
-			foundLetter = letter[0];
+			if(letter[0] == "ShiftKey"){
+				isShift = true;
+				var audio = new Audio("resources/audio1_2.wav");
+				audio.play();
+			}
+			else if(letter[0] == "ShiftLock") {
+				var audio = new Audio("resources/audio1_2.wav");
+				audio.play();
+				isShiftLock = !isShiftLock;
+			}
+			else foundLetter = letter[0];
 		}
 	});
 	if(foundLetter != null){
 		addLetterToLine(foundLetter);
+		if(isShift) isShift = false;
 	}
 }
 
@@ -251,9 +285,24 @@ function changeMouseToPointerOnLetter(event){
 	}
 }
 
+function clearPage(){
+	pastLines = [];
+	line = "";
+	pagina.innerHTML = "Texto: " + "<br>" + "<span id='line'></span>";
+}
+
 function checkIfKeyIsValid(event){
 	var foundLetter = null;
+
 	charMap.forEach(function (letter, index) {
+		if(event.key == letter[0]){
+			foundLetter = letter[0];
+		}
+		else if(event.key == "Enter"){
+			foundLetter = '<br>';
+		}
+	});
+	charMapShift.forEach(function (letter, index) {
 		if(event.key == letter[0]){
 			foundLetter = letter[0];
 		}
@@ -282,6 +331,7 @@ window.onload = function(){
 </head>
 
 <body>
+	<button id = "limpador" onclick="clearPage()">Limpar folha</button>
 	<p id="demo">Aguarde carregar</p>
 	<img id="myimg" src="resources/44_4.png"
 	 alt="Italian Trulli"
