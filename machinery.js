@@ -121,7 +121,7 @@ function checkIfClickIsOnLetter(event) {
     var foundLetter = null;
     charMap.forEach(function (letter, index) {
         if (((Math.pow(relX - letter[2], 2) + Math.pow(relY - letter[3], 2)) < LETTER_DETEC_THRESHOLD)
-                && (!foundLetter)) {
+                && !foundLetter) {
             console.log("clicked on letter " + letter[0]);
 
             if(letter[0] != 'Enter') playSound(KEY_PRESS_SOUND_PATH)
@@ -162,7 +162,7 @@ function clearPage() {
 function checkIfKeyIsValid(event) {
     var foundLetter = null;
     charMap.forEach(function (letter, index) {
-        if(event.key == letter[0] || event.key == letter[1]) {
+        if((event.key == letter[0] || event.key == letter[1]) && !foundLetter) {
             if(letter[0] != 'Enter') playSound(KEY_PRESS_SOUND_PATH);
             else 					 playSound(CARRIAGE_SOUND_PATH);
             foundLetter = event.key;
