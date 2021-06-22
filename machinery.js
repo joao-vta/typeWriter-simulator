@@ -145,7 +145,6 @@ function changeMouseToPointerOnLetter(event) {
     var relY = (event.clientY - imgMachine.offsetTop) / imgMachine.height;
 
     imgMachine.style.cursor='auto';
-    var foundLetter = null;
     charMap.forEach(function (letter, index) {
         if (((Math.pow(relX - letter[2], 2) + Math.pow(relY - letter[3], 2)) < LETTER_DETEC_THRESHOLD)) {
             imgMachine.style.cursor='pointer';
