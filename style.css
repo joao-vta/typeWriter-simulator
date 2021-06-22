@@ -1,0 +1,43 @@
+
+@font-face { 
+	font-family: typeWriter; 
+	src: url('resources/atwriter_2.ttf'); 
+	} 
+body {
+	background-image: url('resources/test_2.jpg');
+	background-size: cover;
+}
+#limpador{
+	position: relative;
+	float: right;
+	margin-right: 10%;
+	margin-top: 2%;
+	height: 30px;
+	width: 30%;
+	color: white;
+	background-color: cadetblue;
+	box-shadow: 6px 6px 4px black;
+}
+#demo{
+	color:black;
+	font-size: 30px;
+}
+#line {  
+	white-space: nowrap; 
+}
+#pagina{
+	font-size: 30px;
+	font-family: 'typeWriter', 'monospace';
+	line-height: 1.1;
+	margin-right: 10%;
+	box-shadow: 11px 11px 3px;
+	
+	height: 80%;
+	width: 30%;
+	background-color: white;
+	float: right;
+}
+#imageMachine{
+	width: 42%;
+	float: left;
+}
