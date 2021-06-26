@@ -72,6 +72,7 @@ const LEFT_MARGIN = "&nbsp&nbsp";
 const KEY_PRESS_SOUND_PATH = "resources/audio1_2.wav";
 const CARRIAGE_SOUND_PATH = "resources/car_back.wav";
 const BELL_SOUND_PATH = "resources/bell2.mp3";
+const PAPER_FLIP_PATH = "resources/paper.wav";
 
 var imgMachine;
 var pagina;
@@ -157,6 +158,7 @@ function clearPage() {
     line = "";
     pagina.innerHTML = "Texto: " + "<br>" + "<span id='line'></span>";
     playedBell = false;
+    playSound(PAPER_FLIP_PATH);
 }
 
 function checkIfKeyIsValid(event) {
