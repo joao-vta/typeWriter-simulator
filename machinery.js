@@ -97,6 +97,7 @@ function addLetterToLine(letter) {
             line = "";
             linePos = 0;
             playedBell = false;
+            document.getElementById("arrow").style.visibility = "hidden";
         }
         else if (linePos + 30/pagina.offsetWidth <= 1) line += letter;
 
@@ -108,6 +109,7 @@ function addLetterToLine(letter) {
 
         if ((linePos > BELL_RING_WARNING) && (playedBell == false)) {
             playSound(BELL_SOUND_PATH);
+            document.getElementById("arrow").style.visibility = "visible";
             playedBell = true;
         }
 }
@@ -116,8 +118,7 @@ function checkIfClickIsOnLetter(event) {
     var relX = (event.clientX - imgMachine.offsetLeft)/ imgMachine.width;
     var relY = (event.clientY - imgMachine.offsetTop) / imgMachine.height;
 
-    document.getElementById("demo").innerHTML = "Clique em uma letra | " 
-    + relX.toFixed(3) + ", " + relY.toFixed(3);
+    document.getElementById("demo").innerHTML = "Clique em uma letra: ";
     
     var foundLetter = null;
     charMap.forEach(function (letter, index) {
@@ -182,5 +183,5 @@ window.onload = function() {
     imgMachine.addEventListener("click", checkIfClickIsOnLetter);
     document.addEventListener('keydown', checkIfKeyIsValid);
     imgMachine.onmousemove = changeMouseToPointerOnLetter;
-    document.getElementById("demo").innerHTML = "Clique em uma letra";
+    document.getElementById("demo").innerHTML = "Clique em uma letra:";
 };

@@ -4,8 +4,23 @@
 	src: url('resources/atwriter_2.ttf'); 
 	} 
 body {
-	background-image: url('resources/test_2.jpg');
+	background-image: url('resources/background.png');
 	background-size: cover;
+}
+#icon{
+	position: absolute;
+	z-index: 0;
+	right: 1%;
+	width: 5%;
+	top: 85%;
+}
+#arrow{
+	position: absolute;
+	z-index: 1;
+	height: 40%;
+	width: 15%;
+	margin-top: 13%;
+	visibility: hidden;
 }
 #limpador{
 	position: relative;
@@ -36,8 +51,10 @@ body {
 	width: 30%;
 	background-color: white;
 	float: right;
+	z-index: 1;
 }
 #imageMachine{
 	width: 42%;
+	z-index: 0;
 	float: left;
 }
